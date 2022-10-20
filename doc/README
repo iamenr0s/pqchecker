@@ -1,0 +1,62 @@
+---------------------------------------------------------
+pqchecker.so shared library  for OpneLDAP/pPolicy overlay
+Allows checks of passwords content quality
+version 2.0.0
+---------------------------------------------------------
+
+pqChecker is a plug-in for OpenLDAP directory server with ppolicy overlay.
+It allows to control the quality of the password before storing it in the 
+dedicated directory attribute. If the password mets configured parameters, 
+it is accepted. It is rejected otherwise.
+
+The controlled parameters are: 
+. Number of required uppercase characters.
+. Number of required lowercase characters.
+. Number of required special characters.
+. Number of required digits.
+. List of forbidden characters.
+
+pqChecker allows, also, an easy settings management by providing two functions 
+for reading and modifying them.
+
+ bool set_params(char *params, char *fmt);
+ bool get_params(char *params, char *fmt);
+
+Also allows to broadcast the changed password in real time.
+This feature is configurable (cf. Configuration parameter in the manual page)
+and requires the installation of pqMessenger middleware.
+
+-------------
+Where to find 
+-------------
+Binary: http://www.meddeb.net/download
+Sources: https://github.com/ameddeb/pqchecker.git
+
+-------------------
+System requirements
+-------------------
+POSIX-compliant operating system (any modern version of BSD, Linux or Unix should work)
+OpenLDAP with ppolicy overlay must be installed on the system.
+
+--------------------
+Building the release
+--------------------
+Please refer to installation guide in the 'INSTALL' file.
+
+---------
+Copyright
+---------
+(c) 2015, Abdelhamid MEDDEB (abdelhamid@meddeb.net)
+pqchecker is distributed under GNU GPL v3+.
+Please refer to 'LICENSE' file for more informations.
+
+--------
+Web site
+--------
+http://www.meddeb.net/pqchecker
+
+-----------
+Bug reports
+-----------
+abdelhamid@meddeb.net
+https://github.com/ameddeb/pqchecker/issues

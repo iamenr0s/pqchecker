@@ -1,0 +1,67 @@
+# pqchecker/pqmessenger debian packages installation instruction
+# (C) 2015-2017, Abdelhamid MEDDEB <abdelhamid@meddeb.net>
+
+Those packages are only for GNU/Linux Debian and compliants systems.
+Tested on Debian Wheezy, Jessie, Stretch and Ubuntu 16.04 LTS.
+
+-----------------------------------------------------
+I - pqChecker module: Passwords content checking only
+-----------------------------------------------------
+
+Depend on slapd package
+
+1) Install, require root privileges
+
+  sudo dpkg -i pqchecker_2.0.0_amd64.deb
+
+2) Remove, require root privileges
+
+  sudo dpkg -r pqchecker
+
+3) Binary file location
+------------------------
+  /usr/lib/ldap/pqchecker.so.2.0.0
+
+-----------------------------------------------------
+II - pqMessenger module: Broadcast modified passwords 
+-----------------------------------------------------
+
+Depend on pqchecker, jsvc and openjdk-X-jre packages (X is the JRE release)
+
+1) Install, require root privileges
+
+  sudo dpkg -i pqmessenger_2.0.0_amd64.deb
+
+2) Remove, require root privileges
+
+  sudo dpkg -r pqmessenger
+
+3) Startup settings
+
+  in /etc/default/pqmessenger
+
+  especially
+    . JAVA_HOME: Java JRE location.
+    . LOG_HOME: log files location. set write privileges.
+    . CONFIG_HOME: settings files location.
+
+4) JMS application server configuration
+
+  Default: 
+    IP address: 127.0.0.1 (local machine)
+    Port: 61616
+
+  May be modified in /etc/ldap/pqchecker/config.xml file
+
+
+5) Start and stop
+
+  At system boot/shutdown time
+
+  or manually:
+
+  sudo service pqmessenger start|stop
+
+6) Binary files location
+
+  /opt/pqmessenger-2.0.0.jar

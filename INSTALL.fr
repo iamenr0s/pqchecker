@@ -1,0 +1,176 @@
+Ce document présente la démarche à suivre pour installer les deux modules pqChecker et pqMessenger
+à partir des fichiers sources.
+Il est nécessaire d'avoir au préalable installé les outils de construction de logiciels sur le système
+cible de l'installation, c'est à dire: gcc, make, JDK, maven.
+L'installation doit se faire dans l'ordre: d'abord pqChecker, optionnellement ensuite pqMessenger.
+
+Note: La réussite de cette procédure nécessité un minimum de connaissances à propos de la construction 
+      des logiciels sur les systèmes GNU Linux (pqchecker) et Java moyennant l'utilitaire Maven (pqmessenger).
+
+----------------------------(I) -----------------------------------------
+pqchecker.so bibliothèque dynamique partagée pour OpenLDAP/pPolicy
+Permet le contrôle de la qualité du contenu des mots de passe
+version 2.0.0
+-------------------------------------------------------------------------
+
+Pour construire et installer pqChecker depuis les sources:
+
+----------------------------------------------------
+1/ Récupérer les fichiers source du serveur OpenLDAP
+----------------------------------------------------
+
+La compilation de pqchecker nécessite la présence des fichiers source
+du serveur OpenLDAP. Vous pouvez les télécharger à partir de:
+
+http://www.openldap.org/software/download 
+
+pour la version actuelle, ou
+
+http://www.openldap.org/software/download/OpenLDAP/openldap-stable
+
+pour une version précédente.
+
+Vous pouvez également installer le paquet des sources du serveur OpenLDAP s'il existe.
+Sur un système Debian par exemple:
+
+Exécuter:
+
+  apt-get source openldap (sans les privilèges root)
+
+Télécharger les fichiers source de la version identique à celle du serveur
+installé sur votre système cible. A défaut, opter pour la version la plus proche. 
+
+Décompresser l'archive téléchargée dans un endroit de votre choix,
+
+Exécuter:
+
+  cd /tmp
+  tar xzvf ~/download/openldap-2.4.42.tgz
+
+Vous obtenez, ainsi, la racine du chemin vers les fichiers source du serveur OpenLDAP:
+
+  /tmp/openldap-2.4.42/
+
+----------------------------------------------------------------------------
+2/ Préparer les fichiers d'en-tête nécessaires à la compilation de pqChecker
+----------------------------------------------------------------------------
+
+Les fichiers d'en-tête nécessaires portable.h et slap.h ne sont pas inclus dans l'archive téléchargée. 
+Il faudra les construire en executant le script "configure" qui est fourni dans l'archive.
+
+Exécuter:
+
+  cd /tmp/openldap-2.4.42
+  ./configure && make depend
+
+Note: Au moins jusqu'à la version 2.4.42 d'OpenLDAP une dépendance avec les fichiers en-tête de 'Berkeley BDB'
+      a été constatée pour achever cette étape.  
+
+-----------------------------------------------------------
+3/ Récupérer et configurer les fichiers source de pqChecker
+-----------------------------------------------------------
+
+Décompresser l'archive de pqchecker,
+
+Exécuter:
+
+  cd /tmp
+  tar xzvf ~/download/pqchecker-2.0.0.tar.gz
+  cd pqchecker-2.0.0/
+
+      | Note pour les utilisateurs de Git: 
+      |-----------------------------------
+      | Si vous avez obtenu les sources de pqChecker à partir du dépôt git 
+      | https://github.com/ameddeb/pqchecker.git
+      | Il faut impérativement exécuter le script:
+      | ./adjustdate.bash 
+      | Avant de construire le binaire, pour cause de non conservation des dates 
+      | de moficiation système des fichiers par Git.  
+
+Exécuter:
+
+  ./configure LDAPSRC=/tmp/openldap-2.4.42 \
+              JAVAHOME=/usr/lib/jvm/default-java \
+              libdir=/usr/lib/ldap \
+              PARAMDIR=/etc/ldap/pqchecker
+
+  LDAPSRC:    Racine du chemin des fichiers source OpenLDAP.
+  JAVAHOME:   Racine de l'emplacement d'installation de Java JDK.
+  libdir:     Emplacement d'installation de pqchecker.so, doit correspondre au chemin de 
+              chargement des modules du serveur OpenLDAP. Ce chemin est /usr/lib/ldap pour le 
+              système Debian et compatibles, /usr/lib/openldap pour Redhat et compatibles.
+  PARAMDIR:   Emplacement de stockage des données pour pqchecker. Cet emplacement doit être
+              accessible en écriture à l'utilisateur système qui execute le serveur OpenLDAP,
+              ainsi que celui qui execute pqMessenger s'il est utilisé.
+
+  D'autres paramètres sont disponibles, ./configure --help pour voir la liste complète.
+
+------------------------------------
+4/ Construire et installer pqChecker
+------------------------------------
+
+Exécuter:
+
+  make
+  sudo make install
+    
+Après cette installation, la page de manuel de pqchecker peut être consultée:
+
+Exécuter:
+
+  man pqchecker (en français si le système est configuré pour la langue française)
+
+-------------------------
+5/ Désinstaller pqchecker
+-------------------------
+
+Executer: 
+
+  sudo make uninstall
+
+
+----------------------------(II)-----------------------------------------
+pqmessenger-2.0.0.jar executable Java
+Permet la communication entre pqChecker et une application compatible JMS
+version 2.0.0
+-------------------------------------------------------------------------
+
+Pré-requis: Connexion Internet active.
+
+--------------------------
+1/ Construire pqMessenger
+--------------------------
+
+Depuis le dossier de pqchecker:
+ 
+Exécuter:
+  
+  cd pqmessenger/
+  mvn clean package
+
+------------------------
+2/ Installer pqMessenger
+------------------------
+
+Exécuter:
+
+  sudo ./pqmessenger-install.sh
+
+-------------------------
+3/ Configurer pqMessenger
+-------------------------
+
+Renseigner la configuration du serveur JMS à utiliser dans le fichier $PARAMDIR/config.xml
+PARAMDIR est le paramètre utilisé pour la construction de pqChecker (cf. supra).
+Les deux paramètres à modifier sont:
+   
+   <Host>127.0.0.1</Host>
+   <Port>61616</Port>
+
+---------------------------
+4/ désinstaller pqMessenger
+---------------------------
+
+Exécuter:
+
+  sudo ./pqmessenger-install.sh --uninstall

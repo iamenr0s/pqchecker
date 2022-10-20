@@ -1,0 +1,67 @@
+# pqchecker/pqmessenger instructions d'installation des paquets debian
+# (C) 2015-2017, Abdelhamid MEDDEB <abdelhamid@meddeb.net>
+
+Ces paquets sont destinés uniquement pour le systèmes GNU/Linux Debian et compatibles.
+Testés sur les systèmes Debian Wheezy, Jessie, Stretch et Ubuntu 16.04 LTS.
+
+--------------------------------------------------------------
+I - Le module pqChecker: Contrôle du contenu des mots de passe
+--------------------------------------------------------------
+
+Dépend du paquet slapd 
+
+1) Installation, les privilèges root sont nécessaires
+
+  sudo dpkg -i pqchecker_2.0.0_amd64.deb
+
+2) Désinstallation, les privileges root sont nécessaires
+
+  sudo dpkg -r pqchecker
+
+3) Emplacement du fichier binaire
+
+  /usr/lib/ldap/pqchecker.so.2.0.0
+
+----------------------------------------------------------------
+II - Le module pqMessenger: diffusion des mots de passe modifiés 
+----------------------------------------------------------------
+
+Dépend des paquets pqchecker, jsvc et openjdk-X-jre (X est le numéro de version de JRE)
+
+1) Installation, les privilèges root sont nécessaires
+
+  sudo dpkg -i pqmessenger_2.0.0_amd64.deb
+
+2) Désinstallation, les privileges root sont nécessaires
+
+  sudo dpkg -r pqmessenger
+
+3) Paramètres de démarrage
+
+  Dans /etc/default/pqmessenger
+
+  Particulièrement:
+    . JAVA_HOME: emplacement de Java JRE.
+    . LOG_HOME: emplacement des fichiers de log. Nécessite les privileges d'écriture.
+    . CONFIG_HOME: emplacement des fichiers de configuration.
+
+4) Configuration de l'application serveur JMS cible de la diffusion
+
+  Par défaut: 
+    Adresse IP: 127.0.0.1 (machine locale)
+    Port: 61616
+
+  Peut être modifié dans /etc/ldap/pqchecker/config.xml file
+
+
+5) Démarrage et arrêt
+
+  Au démarrage et à l'arrêt du système
+
+  ou manuellement:
+
+  sudo service pqmessenger start|stop
+
+6) Emplacement du fichier binaire
+
+  /opt/pqmessenger-2.0.0.jar
